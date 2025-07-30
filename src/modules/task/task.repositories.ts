@@ -14,7 +14,7 @@ import { Task } from './task.models';
 const TaskRepositories = {
   createTask: async (payload: ICreateTaskPayload): Promise<ICreateTaskPayload> => {
     try {
-      // Check if category exists and belongs to user
+      
       const category = await Category.findOne({ _id: payload.category, user: payload.user });
       if (!category) {
         throw new Error('Category not found or does not belong to user');
@@ -23,7 +23,7 @@ const TaskRepositories = {
       const newTask = new Task(payload);
       const savedTask = await newTask.save();
       
-      // Populate category information
+      
       await savedTask.populate('category', 'name ');
       
       return savedTask;
