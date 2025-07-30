@@ -5,7 +5,7 @@ import { Category } from './category.models';
 const CategoryRepositories = {
   createCategory: async (payload: ICategoryPayload) => {
     try {
-      const newCategory = new Category({ name: payload.name });
+      const newCategory = new Category({ name: payload.name ,user: payload.user });
       await newCategory.save();
       return newCategory;
     } catch (error) {

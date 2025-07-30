@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 
 export enum UserRole {
   Host = "host",
-  Guest = "guest",
+  Guest = "user",
   Admin = "admin",
   ListingVerificationManager = "listingVerificationManager",
   FinanceManager = "financeManager",
