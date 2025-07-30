@@ -14,7 +14,7 @@ const {
   checkRefreshToken,
   checkPassword,
   checkRole,
-  isAdmin,
+
 } = UserMiddlewares;
 const {
   handleSignup,
@@ -23,14 +23,7 @@ const {
   handleCheck,
   handleRefreshTokens,
   handleLogout,
-  handleDeleteUser,
   handleResend,
-  handleChangeStaffPassword,
-  handleChangeStaffRole,
-  handleCreateStaff,
-  handleDeleteStaff,
-  handleFindAllStaff,
-  handleChangeOwnPassword,
   handleForgotPassword,
   handleResetPassword,
   handleResendForgotPasswordOtp
@@ -48,26 +41,26 @@ router
 router.route("/refresh").post(checkRefreshToken, handleRefreshTokens);
 router.route("/check").post(checkAccessToken, handleCheck);
 router.route("/logout").post(checkAccessToken, handleLogout);
-router
-  .route("/admin/users/:id")
-  .delete(checkAccessToken, isAdmin, handleDeleteUser);
+// router
+//   .route("/admin/users/:id")
+//   .delete(checkAccessToken, isAdmin, handleDeleteUser);
 
-router
-  .route("/admin/create-staff")
-  .post(checkAccessToken, isAdmin, isSignupUserExist, handleCreateStaff);
-router.route("/admin/staff").get(checkAccessToken, isAdmin, handleFindAllStaff);
-router
-  .route("/admin/staff/:id")
-  .delete(checkAccessToken, isAdmin, handleDeleteStaff);
-router
-  .route("/admin/staff/password/:id")
-  .patch(checkAccessToken, isAdmin, handleChangeStaffPassword);
+// router
+//   .route("/admin/create-staff")
+//   .post(checkAccessToken, isAdmin, isSignupUserExist, handleCreateStaff);
+// router.route("/admin/staff").get(checkAccessToken, isAdmin, handleFindAllStaff);
+// router
+//   .route("/admin/staff/:id")
+//   .delete(checkAccessToken, isAdmin, handleDeleteStaff);
+// router
+//   .route("/admin/staff/password/:id")
+//   .patch(checkAccessToken, isAdmin, handleChangeStaffPassword);
 
-router
-  .route("/admin/staff/role/:id")
-  .patch(checkAccessToken, isAdmin, handleChangeStaffRole);
-router.route("/user/change-password")
-.patch(checkAccessToken, handleChangeOwnPassword);
+// router
+//   .route("/admin/staff/role/:id")
+//   .patch(checkAccessToken, isAdmin, handleChangeStaffRole);
+// router.route("/user/change-password")
+// .patch(checkAccessToken, handleChangeOwnPassword);
 router.route("/forgot-password").post( handleForgotPassword);
 router.route("/reset-password").post(handleResetPassword);
 router.route("/resend-forgot-password").post(handleResendForgotPasswordOtp);

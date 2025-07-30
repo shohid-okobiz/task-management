@@ -23,8 +23,6 @@ const {
   findOneListedRentById,
   findOneHostListedStepField,
   findAllSearchingRent,
-  handleRentDateBlockList,
-  handleGetRentDateBlockList,
   setRentSelected
 } = RentRepositories;
 const RentServices = {
@@ -139,42 +137,42 @@ const RentServices = {
       }
     }
   },
-  processHostListedRentProperties: async ({ host, page, limit }: IRentPayload) => {
-    try {
-      return await processHostListedRentProperties({ host, page, limit });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In unlink rent listing image service');
-      }
-    }
-  },
+  // processHostListedRentProperties: async ({ host, page, limit }: IRentPayload) => {
+  //   try {
+  //     return await processHostListedRentProperties({ host, page, limit });
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In unlink rent listing image service');
+  //     }
+  //   }
+  // },
 
-    handleRentDateBlockList: async ({ host, payload }: { host: string, payload: any }) => {
-    try {
-      return await handleRentDateBlockList({ host, payload });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In unlink rent listing image service');
-      }
-    }
-  },
+  //   handleRentDateBlockList: async ({ host, payload }: { host: string, payload: any }) => {
+  //   try {
+  //     return await handleRentDateBlockList({ host, payload });
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In unlink rent listing image service');
+  //     }
+  //   }
+  // },
 
-  handleGetRentDateBlockList: async ({ payload }: {  payload: any }) => {
-    try {
-      return await handleGetRentDateBlockList({ payload });
-    }
-    catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In unlink rent listing image service');
-      }
-    }
-  },
+  // handleGetRentDateBlockList: async ({ payload }: {  payload: any }) => {
+  //   try {
+  //     return await handleGetRentDateBlockList({ payload });
+  //   }
+  //   catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In unlink rent listing image service');
+  //     }
+  //   }
+  // },
   processRetrieveOneListedRent: async ({ slug }: IRentPayload) => {
     try {
       return await findOneListedRent({ slug });

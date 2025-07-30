@@ -40,10 +40,10 @@ import {
   CategoryRoutes,
   
  
-  SubCategory,
+  // SubCategory,
   
  
-  Rent,
+  // Rent,
  
 } from './routes/v1';
 
@@ -52,10 +52,10 @@ app.use(baseUrl.v1, UserRoutes);
 app.use(baseUrl.v1, CategoryRoutes);
  
  
-app.use(baseUrl.v1, SubCategory);
+// app.use(baseUrl.v1, SubCategory);
  
  
-app.use(baseUrl.v1, Rent);
+// app.use(baseUrl.v1, Rent);
  
  
 

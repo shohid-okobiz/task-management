@@ -10,7 +10,6 @@ const {
   processProgressRentListing,
   processUploadImage,
   processUnlinkImage,
-  processHostListedRentProperties,
   processChangeStatus,
   processGetAllListedRent,
   processDeleteListedRentItem,
@@ -19,8 +18,7 @@ const {
   processRetrieveOneListedRentById,
   processGetRentField,
   searchRentListings,
-  handleRentDateBlockList,
-  handleGetRentDateBlockList,
+ 
   processSetRentSelected
 } = RentServices;
 const RentControllers = {
@@ -178,68 +176,7 @@ const RentControllers = {
       next();
     }
   },
-  handleGetAllHostListedPropertiesForRent: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { userId } = req.authenticateTokenDecoded;
-      const host = userId;
-      const { page, limit, } = req.query as IGetAllRentRequestedQuery;
-      const {data, total} = await processHostListedRentProperties({ host, page, limit });
-      res.status(200).json({
-        status: 'success',
-        message: 'Listed Properties For Rent Retrieve successful',
-        totalContacts: total,
-        data,
-      });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
-
-    handleRentDateBlockList: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { userId } = req.authenticateTokenDecoded;
-      const payload = req.body;
-      const host = userId.toString();
-      const data = await handleRentDateBlockList({ host, payload });
-      res.status(200).json({
-        status: 'success',
-        message: 'Listed Properties For Rent Retrieve successful',
-        data,
-      });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next(error);
-    }
-  },
-
-  handleGetRentDateBlockList: async (
-    req: Request, res: Response, next: NextFunction
-  ) => { 
-    try {
-       const payload = req.query as { rentId?: string };
-      const data = await handleGetRentDateBlockList({  payload  });
-      res.status(200).json({
-        status: 'success',
-        message: 'Listed Properties For Rent Retrieve successful',
-        data,
-      });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next(error);
-    }
-  },
+ 
   handleChangeStatus: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;

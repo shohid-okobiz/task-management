@@ -4,7 +4,7 @@ import User from '../user/user.model';
 import IRent, { IGetAllRentPayload, IRentPayload, RentListingStatus } from './rent.interfaces';
 import Rent from './rent.models';
 import Blockdate from './blockDate.models';
-import RentBooking from '../rentbooking/rentbooking.models';
+// import RentBooking from '../rentbooking/rentbooking.models';
 const RentRepositories = {
   initializedRentListing: async ({ host, payload }: IRentPayload) => {
     try {
@@ -160,8 +160,7 @@ const RentRepositories = {
     try {
       const currentPage = page ?? 1;
       const skip = (currentPage - 1) * documentPerPage;
-      // const sortOption: Record<string, 1 | -1> | undefined =
-      //   sort === 1 || sort === -1 ? { createdAt: sort } : undefined;
+
       const sortValue = Number(sort);
       const sortOption: Record<string, 1 | -1> =
         sortValue === 1 || sortValue === -1
@@ -315,74 +314,7 @@ const RentRepositories = {
     }
   },
 
-  handleRentDateBlockList: async ({ host, payload }: { host: string, payload: any }) => {
-    try {
-      const { rentId, date } = payload;
-      console.log('handleRentDateBlockList', { host, rentId, date });
-      const rent = await Rent.findOne({ _id: rentId, host });
-      if (!rent) {
-        throw new Error('Rent not found or you do not have permission to block dates for this rent');
-      }
-      // Check if this date is already booked in RentBooking
-      const bookingExists = await RentBooking.findOne({
-        rent: rent._id,
-        checkinDate: { $lte: new Date(date) },
-        checkoutDate: { $gte: new Date(date) },
-        status: { $nin: ['cancelled', 'rejected'] }, // Only consider active bookings
-      });
-
-      if (bookingExists) {
-        throw new Error('This date is already booked and cannot be blocked.');
-      }
-      // If only a single date is provided, block/unblock that date
-      const blockDate = new Date(date);
-
-      // Check if the block date already exists
-      const existing = await Blockdate.findOne({
-        rent: rent._id,
-        blockDate: blockDate
-      });
-
-      if (existing) {
-        // If already blocked, remove (unblock) it
-        await Blockdate.deleteOne({ _id: existing._id });
-        return { message: 'Date unblocked successfully', date: blockDate };
-      }
-
-      // Create the block date
-      const createdBlockDate = await Blockdate.create({
-        rent: rent._id,
-        blockDate: blockDate
-      });
-
-      return createdBlockDate;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Rent Date Block List Operation');
-      }
-    }
-  },
-
-  handleGetRentDateBlockList: async ({ payload }: { payload: any }) => {
-    try {
-      const { rentId } = payload;
-      let filter: any = {};
-      if (rentId) {
-        filter.rent = rentId;
-      }
-      const blockDates = await Blockdate.find(filter).sort({ blockDate: 1 });
-
-      return blockDates;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Get Rent Date Block List Operation');
-      }
-    }
-  },
+ 
   setRentSelected: async ({ id, selected }: { id: string, selected: boolean }) => {
     try {
       // Count currently selected items

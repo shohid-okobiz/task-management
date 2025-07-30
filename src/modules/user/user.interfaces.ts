@@ -1,9 +1,9 @@
 import { Document, Types } from "mongoose";
 import {
-  AccountStatus,
+  
   UserRole,
 } from "../../interfaces/jwtPayload.interfaces";
-import { DocumentType } from "./user.enums";
+ 
 
 export interface IUser extends Document {
   isStaff: Boolean;
@@ -15,7 +15,7 @@ export interface IUser extends Document {
   isVerified: boolean;
   password: string;
   profile: Types.ObjectId;
-  accountStatus: AccountStatus;
+  // accountStatus: AccountStatus;
   identityDocument: Types.ObjectId;
 }
 
@@ -29,7 +29,7 @@ export interface IUserPayload {
   isVerified?: boolean;
   password?: string;
   profile?: Types.ObjectId;
-  accountStatus?: AccountStatus;
+  // accountStatus?: AccountStatus;
   identityDocument?: Types.ObjectId;
   userId?:Types.ObjectId;
 }

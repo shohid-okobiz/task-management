@@ -12,14 +12,7 @@ const {
   processLogin,
   processTokens,
   processLogout,
-  processDeleteUser,
   processResend,
-  processCreateStaff,
-  processDeleteStaff,
-  processFindAllStaff,
-  processChangeStaffPassword,
-  processChangeStaffRole,
-  processChangeOwnPassword,
   processForgotPassword,
   processResetPassword,
   processResendForgotPasswordOtp
@@ -52,7 +45,7 @@ const UserControllers = {
         res.cookie("refreshtoken", refreshToken, cookieOption(null, 30));
         res.status(200).json({
           status: "success",
-          message: "Account verification successful",
+          message: "Email verification successfully",
           accessToken,
         });
         return;
@@ -121,26 +114,7 @@ const UserControllers = {
       next();
     }
   },
-  handleDeleteUser: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id } = req.params;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        res
-          .status(400)
-          .json({ status: "error", message: "Invalid feature ID" });
-        return;
-      }
-      const userId = new mongoose.Types.ObjectId(id);
-      const isDeleted = await processDeleteUser({ id: userId });
-      if (!isDeleted)
-        res.status(404).json({ status: "error", message: "user not found" });
-      res.status(200).json({ status: "success", message: "user deleted" });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
+
   handleResend: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, name } = req.user as IUser;
@@ -154,47 +128,8 @@ const UserControllers = {
       next();
     }
   },
-  handleCreateStaff: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const data = await processCreateStaff(req.body);
-      res
-        .status(201)
-        .json({ status: "success", message: "Staff Created", data });
-      return;
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
-  handleChangeOwnPassword: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userId = req.authenticateTokenDecoded?.userId;
-      const { oldPassword, newPassword } = req.body;
 
-      if (!oldPassword || !newPassword) {
-        res.status(400).json({
-          status: "error",
-          message: "Both oldPassword and newPassword are required",
-        });
-        return;
-      }
 
-      await processChangeOwnPassword({ userId: userId.toString(), oldPassword, newPassword });
-      res.status(200).json({
-        status: "success",
-        message: "Password changed successfully",
-      });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
   handleForgotPassword: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email } = req.body;
@@ -273,136 +208,8 @@ const UserControllers = {
   },
 
 
-  handleChangeStaffPassword: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { id } = req.params;
-      const { password } = req.body;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        res
-          .status(400)
-          .json({ status: "error", message: "Invalid feature ID" });
-        return;
-      }
-      const userId = new mongoose.Types.ObjectId(id);
-      await processChangeStaffPassword({ userId, password });
-      res.status(200).json({
-        status: "success",
-        message: "Staff Password Change Successful",
-      });
-      return;
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
-  handleChangeStaffRole: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { id } = req.params;
-      const { role } = req.body;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        res
-          .status(400)
-          .json({ status: "error", message: "Invalid feature ID" });
-        return;
-      }
-      const userId = new mongoose.Types.ObjectId(id);
-      await processChangeStaffRole({ userId, role });
-      res.status(200).json({
-        status: "success",
-        message: "Staff Role Change Successful",
-      });
-      return;
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
-  handleDeleteStaff: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { id } = req.params;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        res
-          .status(400)
-          .json({ status: "error", message: "Invalid feature ID" });
-        return;
-      }
-      const userId = new mongoose.Types.ObjectId(id);
-      const data = await processDeleteStaff({ id: userId });
-      if (!data) {
-        res.status(400).json({
-          status: "success",
-          message: "Staff Delete Successful",
-          data,
-        });
-        return;
-      }
-      res
-        .status(200)
-        .json({ status: "success", message: "Staff Delete Successful", data });
-      return;
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
-  handleFindAllStaff: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { page, role, search } = req.query as IFindStaffRequestQuery;
-      const { data, total } = await processFindAllStaff({ page, role, search });
-      const totalPages = Math.ceil(total / documentPerPage);
-      const totalStaffs = total;
-      const baseUrl = `${req.protocol}://${req.get("host")}${req.baseUrl}${req.path
-        }`;
 
-      const buildQuery = (pageNumber: number) => {
-        const query = new URLSearchParams();
-        if (search) query.set("search", search);
-        if (pageNumber !== 1) query.set("page", String(pageNumber));
-        if (role) query.set("role", String(role));
-        const queryString = query.toString();
-        return queryString ? `${baseUrl}?${queryString}` : baseUrl;
-      };
-      const currentPage = Number(page) || 1;
-      const currentPageUrl = buildQuery(currentPage);
-      const nextPageUrl =
-        currentPage < totalPages ? buildQuery(currentPage + 1) : null;
-      const previousPageUrl =
-        currentPage > 1 ? buildQuery(currentPage - 1) : null;
-      res.status(200).json({
-        status: "success",
-        message: `All Staff Retrieve successful`,
-        totalStaffs,
-        totalPages,
-        currentPageUrl,
-        nextPageUrl,
-        previousPageUrl,
-        data,
-      });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
+
 };
 
 export default UserControllers;

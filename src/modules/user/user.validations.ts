@@ -2,11 +2,7 @@ import { z } from "zod";
 import { emailRegex } from "../../const";
 
 export const signupInputValidationSchema = z.object({
-  role: z
-    .string({ required_error: "Role is required" })
-    .min(3, "Role must be at least 3 characters")
-    .max(20, "Role must not exceed 20 characters")
-    .trim(),
+ 
   name: z
     .string({ required_error: "Name is required" })
     .min(3, "Name must be at least 3 characters")

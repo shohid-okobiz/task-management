@@ -25,13 +25,6 @@ import otpGenerator from "otp-generator";
 const {
   createUser,
   verifyUser,
-  deleteUser,
-  createStaff,
-  deleteStaff,
-  findAllStaff,
-  changeStaffPassword,
-  changeStaffRole,
-  changeUserPassword,
   findUserByEmailPassword,
   findUserByEmailResetPass,
   findUserByEmailForResetOtp,
@@ -73,22 +66,20 @@ const UserServices = {
     const data = await verifyUser(email);
     try {
       if (data) {
-        const { email, isVerified, role, id, name, accountStatus } = data;
+        const { email, isVerified,  id, name,  } = data;
         const accessToken = generateAccessToken({
           email,
           isVerified,
-          role,
           userId: id,
           name,
-          accountStatus,
+          
         }) as string;
         const refreshToken = generateRefreshToken({
           email,
           isVerified,
-          role,
           userId: id,
           name,
-          accountStatus,
+         
         }) as string;
 
         return { accessToken, refreshToken } as ITokenProcessReturn;
@@ -103,14 +94,14 @@ const UserServices = {
     }
   },
   processLogin: (payload: IUser): ITokenProcessReturn => {
-    const { email, isVerified, role, id, name, accountStatus } = payload;
+    const { email, isVerified, role, id, name } = payload;
     const accessToken = generateAccessToken({
       email,
       isVerified,
       role,
       userId: id,
       name,
-      accountStatus,
+       
     }) as string;
     const refreshToken = generateRefreshToken({
       email,
@@ -118,13 +109,13 @@ const UserServices = {
       role,
       userId: id,
       name,
-      accountStatus,
+       
     }) as string;
 
     return { accessToken, refreshToken } as ITokenProcessReturn;
   },
   processTokens: (payload: TokenPayload): ITokenProcessReturn => {
-    const { email, isVerified, role, userId, name, accountStatus } = payload;
+    const { email, isVerified, role, userId, name } = payload;
 
     const accessToken = generateAccessToken({
       email,
@@ -132,7 +123,7 @@ const UserServices = {
       role,
       userId,
       name,
-      accountStatus,
+      
     }) as string;
 
     const refreshToken = generateRefreshToken({
@@ -141,7 +132,7 @@ const UserServices = {
       role,
       userId,
       name,
-      accountStatus,
+      
     }) as string;
 
     return { accessToken, refreshToken } as ITokenProcessReturn;
@@ -153,27 +144,7 @@ const UserServices = {
       throw error;
     }
   },
-  processDeleteUser: async ({ id }: IProcessDeleteUserPayload) => {
-    try {
-      const { deletedIdentityData, deletedUserData } = await deleteUser(id);
-      if (!deletedUserData) return false;
-      if (deletedIdentityData) {
-        const { frontSide, backSide } =
-          deletedIdentityData as IIdentityDocument;
-        const images = [frontSide, backSide];
-        const relativeImagePath = images?.map((item) =>
-          item?.replace("/public/", "")
-        );
-        const filePaths = relativeImagePath?.map((item) =>
-          join(__dirname, "../../../public", item!)
-        );
-        await Promise.all([filePaths?.map((item) => fs.unlink(item))]);
-      }
-      return true;
-    } catch (error) {
-      throw error;
-    }
-  },
+ 
   processResend: async ({ email, name }: IProcessResendEmailPayload) => {
     try {
       const otp = otpGenerator.generate(6, {
@@ -197,74 +168,9 @@ const UserServices = {
       }
     }
   },
-  processFindAllStaff: async ({
-    page,
-    role,
-    search,
-  }: IFindStaffRequestQuery) => {
-    try {
-      const query: IFindStaffQuery = { isStaff: true };
-      if (typeof search === "string" && search.trim() !== "") {
-        query.email = { $regex: search.trim(), $options: "i" };
-      }
-      if (role) query.role = role;
-      return await findAllStaff({ query, page });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In Find All Staff Service");
-      }
-    }
-  },
-  processCreateStaff: async (payload: ISignupPayload) => {
-    try {
-      return await createStaff(payload);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In Staff Creation Service");
-      }
-    }
-  },
-  processChangeStaffPassword: async (payload: IUserPayload) => {
-    try {
-      return await changeStaffPassword(payload);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error(
-          "Unknown Error Occurred In Staff Password Change Service"
-        );
-      }
-    }
-  },
-  processChangeOwnPassword: async ({
-    userId,
-    oldPassword,
-    newPassword,
-  }: {
-    userId: string;
-    oldPassword: string;
-    newPassword: string;
-  }) => {
-    try {
-      return await changeUserPassword({ userId, oldPassword, newPassword });
-
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error(
-          "Unknown Error Occurred In User Password Change Service"
-        );
-      }
-
-    }
-
-  },
+  
+ 
+ 
   processForgotPassword: async (email: string) => {
     try {
       const user = await findUserByEmailPassword(email);
@@ -348,30 +254,7 @@ const UserServices = {
         : new Error("Failed to resend OTP");
     }
   },
-  processChangeStaffRole: async (payload: IUserPayload) => {
-    try {
-      return await changeStaffRole(payload);
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In Staff role Change Service");
-      }
-    }
-  },
-  processDeleteStaff: async ({ id }: IProcessDeleteUserPayload) => {
-    try {
-      const { deletedUserData } = await deleteStaff(id);
-      if (!deletedUserData) return false;
-      return true;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In Staff Delete Service");
-      }
-    }
-  },
+ 
 };
 
 

@@ -4,7 +4,7 @@ import UserRepositories from "./user.repositories";
 import redisClient from "../../configs/redis.configs";
 import { verifyAccessToken, verifyRefreshToken } from "../../utils/jwt.utils";
 import {
-  AccountStatus,
+
   TokenPayload,
   UserRole,
 } from "../../interfaces/jwtPayload.interfaces";
@@ -123,58 +123,58 @@ const UserMiddlewares = {
       next();
     };
   },
-  isAdmin: async (req: Request, res: Response, next: NextFunction) => {
-    const role = req?.authenticateTokenDecoded?.role;
-    if (role !== UserRole.Admin) {
-      res.status(401).json({
-        status: "error",
-        message: "You do not have permission to access this resource",
-      });
-      return;
-    }
-    next();
-  },
-  isHost: async (req: Request, res: Response, next: NextFunction) => {
-    const { role, accountStatus, email } = req?.authenticateTokenDecoded;
-              const foundedUser = await User.findOne({ email });
-    if (role !== UserRole.Host) {
-      res.status(403).json({
-        status: "error",
-        message: "You do not have permission to access this resource",
-      });
-      return;
-    }
-        if (!foundedUser) {
-      res.status(404).json({
-        status: "error",
-        message: "User not found",
-      });
-      return;
-    }
-    switch (foundedUser.accountStatus) {
-      case AccountStatus.INACTIVE:
-        res.status(403).json({
-          status: "error",
-          message: "Identity verification is required to use this feature.",
-        });
-        return;
-      case AccountStatus.PENDING:
-        res.status(403).json({
-          status: "error",
-          message:
-            "Your identity verification is pending. Please wait for admin approval.",
-        });
-        return;
-      case AccountStatus.SUSPENDED:
-        res.status(403).json({
-          status: "error",
-          message:
-            "Your account is suspended. Please contact support for assistance.",
-        });
-        return;
-    }
-    next();
-  },
+  // isAdmin: async (req: Request, res: Response, next: NextFunction) => {
+  //   const role = req?.authenticateTokenDecoded?.role;
+  //   if (role !== UserRole.Admin) {
+  //     res.status(401).json({
+  //       status: "error",
+  //       message: "You do not have permission to access this resource",
+  //     });
+  //     return;
+  //   }
+  //   next();
+  // },
+  // isHost: async (req: Request, res: Response, next: NextFunction) => {
+  //   const { role, accountStatus, email } = req?.authenticateTokenDecoded;
+  //             const foundedUser = await User.findOne({ email });
+  //   if (role !== UserRole.Host) {
+  //     res.status(403).json({
+  //       status: "error",
+  //       message: "You do not have permission to access this resource",
+  //     });
+  //     return;
+  //   }
+  //       if (!foundedUser) {
+  //     res.status(404).json({
+  //       status: "error",
+  //       message: "User not found",
+  //     });
+  //     return;
+  //   }
+  //   switch (foundedUser.accountStatus) {
+  //     case AccountStatus.INACTIVE:
+  //       res.status(403).json({
+  //         status: "error",
+  //         message: "Identity verification is required to use this feature.",
+  //       });
+  //       return;
+  //     case AccountStatus.PENDING:
+  //       res.status(403).json({
+  //         status: "error",
+  //         message:
+  //           "Your identity verification is pending. Please wait for admin approval.",
+  //       });
+  //       return;
+  //     case AccountStatus.SUSPENDED:
+  //       res.status(403).json({
+  //         status: "error",
+  //         message:
+  //           "Your account is suspended. Please contact support for assistance.",
+  //       });
+  //       return;
+  //   }
+  //   next();
+  // },
   checkVerificationOtp: async (
     req: Request,
     res: Response,
@@ -248,47 +248,7 @@ const UserMiddlewares = {
     }
   },
 
-  // checkAccessToken: async (req: Request, res: Response, next: NextFunction) => {
-  //   req.authenticateTokenDecoded = decoded as TokenPayload;
-  //   const authHeader = req.headers.authorization;
-  //   console.log("authheader ===", authHeader)
-  //   try {
-  //     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-  //       res.status(401).json({
-  //         status: "error",
-  //         message: "Unauthorize Request",
-  //         error: "Accesstoken is missing",
-  //       });
-  //       return;
-  //     }
-  //     const token = authHeader?.split(" ")[1];
-  //     console.log("token ===", token)
-  //     const isBlacklisted = await redisClient.get(`blacklist:${token}`);
-  //     console.log("isBlacklisted ===", isBlacklisted)
-  //     if (isBlacklisted) {
-  //       res.status(403).json({
-  //         status: "error",
-  //         message: "Permission Denied",
-  //         error: "Accesstoken has been revoked",
-  //       });
-  //       return;
-  //     }
-  //     const decoded = verifyAccessToken(token);
-  //     if (!decoded) {
-  //       res.status(403).json({
-  //         status: "error",
-  //         message: "Permission Denied",
-  //         error: "Accesstoken expired or invalid",
-  //       });
-  //       return;
-  //     }
-  //     req.authenticateTokenDecoded = decoded as TokenPayload;
-  //     next();
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // },
-
+   
   checkRefreshToken: (req: Request, res: Response, next: NextFunction) => {
     const { refreshtoken } = req.cookies;
     if (refreshtoken) {

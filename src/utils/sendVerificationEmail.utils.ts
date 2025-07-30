@@ -8,7 +8,7 @@ const sendVerificationEmail = async (data: IVerificationEmailData) => {
   try {
     const template = Handlebars.compile(verificationEmailTemplate);
     const verificationLink = `${NEXT_PUBLIC_BASE_URL}/email-verification?email=${data.email}`;
-    // const personalizedTemplate = template(data);
+   
     const personalizedTemplate = template({
       ...data,
       baseUrl: NEXT_PUBLIC_BASE_URL,

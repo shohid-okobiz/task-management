@@ -11,18 +11,11 @@ export enum UserRole {
   AccountAdministrator = "accountAdministrator",
 }
 
-export enum AccountStatus {
-  INACTIVE = "inactive",
-  ACTIVE = "active",
-  PENDING = "pending",
-  SUSPENDED = "suspended",
-  REJECTED = "rejected",
-}
+ 
 export interface TokenPayload extends JwtPayload {
   userId: Types.ObjectId;
   email: string;
   name: string;
-  role: UserRole;
   isVerified: boolean;
-  accountStatus: AccountStatus;
+  
 }

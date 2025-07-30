@@ -8,7 +8,7 @@ import {
   IUser,
   IUserPayload,
 } from './user.interfaces';
-import User, { IdentityDocument } from './user.model';
+import User from './user.model';
 import { ISearchUserQuery } from '../profile/profile.interfaces';
 import { documentPerPage } from '../../const';
 import { comparePassword, hashPassword } from '../../utils/password.utils';
@@ -23,7 +23,7 @@ const UserRepositories = {
     try {
       const user = new User({
         name,
-        role,
+        // role,
         password,
         email,
       });
@@ -93,144 +93,144 @@ const UserRepositories = {
       }
     }
   },
-  deleteUser: async (payload: Types.ObjectId) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      const deletedUserData = await User.findByIdAndDelete(payload);
-      await Profile.findOneAndDelete({ user: payload });
-      const deletedIdentityData = deletedUserData?.identityDocument
-        ? await IdentityDocument.findByIdAndDelete(deletedUserData?.identityDocument)
-        : null;
-      session.endSession();
-      return { deletedUserData, deletedIdentityData };
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In User Delete Repository');
-      }
-    }
-  },
-  findAllStaff: async ({ page, query }: IFindStaffPayload) => {
-    try {
-      const currentPage = page ?? 1;
-      const skip = (currentPage - 1) * documentPerPage;
-      const [data, total] = await Promise.all([
-        User.find(query).limit(documentPerPage).skip(skip),
-        User.countDocuments(query),
-      ]);
-      return { data, total };
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Staff Retrieve Repository');
-      }
-    }
-  },
-  createStaff: async ({ email, name, password, role }: ISignupPayload) => {
-    try {
-      const newStaff = new User({
-        name,
-        email,
-        role,
-        password,
-        isVerified: true,
-        isStaff: true,
-      });
-      await newStaff.save();
-      return newStaff;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Staff Creation Repository');
-      }
-    }
-  },
-  deleteStaff: async (payload: Types.ObjectId) => {
-    const session = await mongoose.startSession();
-    session.startTransaction();
-    try {
-      const deletedUserData = await User.findByIdAndDelete(payload);
-      await Profile.findOneAndDelete({ user: payload });
-      session.endSession();
-      return { deletedUserData };
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Staff Delete Repository');
-      }
-    }
-  },
-  changeStaffPassword: async ({ password, userId }: IUserPayload) => {
-    try {
-      const hashedPassword = await hashPassword(password!);
-      const data = await User.findByIdAndUpdate(
-        userId,
-        {
-          $set: { password: hashedPassword },
-        },
-        { new: true }
-      );
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Staff Password Change Repository');
-      }
-    }
-  },
-  changeUserPassword: async ({
-    userId,
-    oldPassword,
-    newPassword,
-  }: {
-    userId: string;
-    oldPassword: string;
-    newPassword: string;
-  }) => {
-    try {
-      const user = await User.findById(userId);
-      if (!user) throw new Error("User not found");
+  // deleteUser: async (payload: Types.ObjectId) => {
+  //   const session = await mongoose.startSession();
+  //   session.startTransaction();
+  //   try {
+  //     const deletedUserData = await User.findByIdAndDelete(payload);
+  //     await Profile.findOneAndDelete({ user: payload });
+  //     const deletedIdentityData = deletedUserData?.identityDocument
+  //       ? await IdentityDocument.findByIdAndDelete(deletedUserData?.identityDocument)
+  //       : null;
+  //     session.endSession();
+  //     return { deletedUserData, deletedIdentityData };
+  //   } catch (error) {
+  //     await session.abortTransaction();
+  //     session.endSession();
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In User Delete Repository');
+  //     }
+  //   }
+  // },
+  // findAllStaff: async ({ page, query }: IFindStaffPayload) => {
+  //   try {
+  //     const currentPage = page ?? 1;
+  //     const skip = (currentPage - 1) * documentPerPage;
+  //     const [data, total] = await Promise.all([
+  //       User.find(query).limit(documentPerPage).skip(skip),
+  //       User.countDocuments(query),
+  //     ]);
+  //     return { data, total };
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In Staff Retrieve Repository');
+  //     }
+  //   }
+  // },
+  // createStaff: async ({ email, name, password, role }: ISignupPayload) => {
+  //   try {
+  //     const newStaff = new User({
+  //       name,
+  //       email,
+  //       role,
+  //       password,
+  //       isVerified: true,
+  //       isStaff: true,
+  //     });
+  //     await newStaff.save();
+  //     return newStaff;
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In Staff Creation Repository');
+  //     }
+  //   }
+  // },
+  // deleteStaff: async (payload: Types.ObjectId) => {
+  //   const session = await mongoose.startSession();
+  //   session.startTransaction();
+  //   try {
+  //     const deletedUserData = await User.findByIdAndDelete(payload);
+  //     await Profile.findOneAndDelete({ user: payload });
+  //     session.endSession();
+  //     return { deletedUserData };
+  //   } catch (error) {
+  //     await session.abortTransaction();
+  //     session.endSession();
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In Staff Delete Repository');
+  //     }
+  //   }
+  // },
+  // changeStaffPassword: async ({ password, userId }: IUserPayload) => {
+  //   try {
+  //     const hashedPassword = await hashPassword(password!);
+  //     const data = await User.findByIdAndUpdate(
+  //       userId,
+  //       {
+  //         $set: { password: hashedPassword },
+  //       },
+  //       { new: true }
+  //     );
+  //     return data;
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error('Unknown Error Occurred In Staff Password Change Repository');
+  //     }
+  //   }
+  // },
+  // changeUserPassword: async ({
+  //   userId,
+  //   oldPassword,
+  //   newPassword,
+  // }: {
+  //   userId: string;
+  //   oldPassword: string;
+  //   newPassword: string;
+  // }) => {
+  //   try {
+  //     const user = await User.findById(userId);
+  //     if (!user) throw new Error("User not found");
 
-      if (!user.password) {
-        throw new Error("User has no password set");
-      }
+  //     if (!user.password) {
+  //       throw new Error("User has no password set");
+  //     }
 
-      const isMatch = await comparePassword(oldPassword, user.password);
-      if (!isMatch) throw new Error("Old password is incorrect");
+  //     const isMatch = await comparePassword(oldPassword, user.password);
+  //     if (!isMatch) throw new Error("Old password is incorrect");
 
-      const hashedPassword = await hashPassword(newPassword);
-      if (!hashedPassword) {
-        throw new Error("Password hashing failed");
-      }
+  //     const hashedPassword = await hashPassword(newPassword);
+  //     if (!hashedPassword) {
+  //       throw new Error("Password hashing failed");
+  //     }
 
-      const data = await User.findByIdAndUpdate(
-        userId,
-        {
-          $set: { password: hashedPassword },
-        },
-        { new: true }
-      );
+  //     const data = await User.findByIdAndUpdate(
+  //       userId,
+  //       {
+  //         $set: { password: hashedPassword },
+  //       },
+  //       { new: true }
+  //     );
 
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In User Password Change");
-      }
-    }
+  //     return data;
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error("Unknown Error Occurred In User Password Change");
+  //     }
+  //   }
 
-  },
+  // },
   findUserByEmailPassword: async (email: string) => {
     try {
       const user = await User.findOne({ email });
@@ -302,45 +302,8 @@ const UserRepositories = {
   }
 }
 ,
-  // findUserByEmailResetPass: async (
-  //   email: string,
-  //   newPassword: string
-  // ) => {
-  //   try {
-  //     const user = await User.findOne({ email });
-  //     if (!user) return null;
-
-  //     const hashedPassword = await hashPassword(newPassword);
-  //     console.log("DB password: ", user.password);
-  //     user.password = hashedPassword;
-  //     // await user.save();
-
-  //     return user;
-  //   } catch (error) {
-  //     throw error instanceof Error
-  //       ? error
-  //       : new Error("Error resetting user password");
-  //   }
-  // },
-
-  changeStaffRole: async ({ role, userId }: IUserPayload) => {
-    try {
-      const data = await User.findByIdAndUpdate(
-        userId,
-        {
-          $set: { role },
-        },
-        { new: true }
-      );
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In Staff Role Change Repository');
-      }
-    }
-  },
+  
+  
 };
 
 export default UserRepositories;
