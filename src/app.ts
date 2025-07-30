@@ -34,28 +34,24 @@ app.get('/', (req: Request, res: Response) => {
 
 import {
  
+  TaskRoutes,
   UserRoutes,
- 
-  CategoryRoutes,
   
  
-  // SubCategory,
+  // CategoryRoutes,
   
  
-  // Rent,
+ 
  
 } from './routes/v1';
 
 app.use(baseUrl.v1, UserRoutes);
+app.use(baseUrl.v1, TaskRoutes)
  
-app.use(baseUrl.v1, CategoryRoutes);
+// app.use(baseUrl.v1, CategoryRoutes);
 
  
  
-// app.use(baseUrl.v1, SubCategory);
- 
- 
-// app.use(baseUrl.v1, Rent);
  
  
 
