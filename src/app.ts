@@ -34,28 +34,21 @@ app.get('/', (req: Request, res: Response) => {
 
 import {
  
+  CategoryRoutes,
   TaskRoutes,
   UserRoutes,
-  
- 
-  // CategoryRoutes,
-  
- 
- 
- 
+
 } from './routes/v1';
 
 app.use(baseUrl.v1, UserRoutes);
-app.use(baseUrl.v1, TaskRoutes)
- 
-// app.use(baseUrl.v1, CategoryRoutes);
-
- 
- 
- 
+app.use(baseUrl.v1, TaskRoutes);
+app.use(baseUrl.v1, CategoryRoutes);
  
 
-
+ 
+ 
+ 
+ 
 app.use(globalErrorMiddleware);
 
 export default app;

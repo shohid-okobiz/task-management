@@ -1,6 +1,6 @@
 import { ICategoryPayload } from "./category.interfaces";
 import CategoryRepositories from "./category.repositories";
-const { createCategory, updateCategory, findCategories, deleteCategory } =
+const { createCategory, findCategories, } =
   CategoryRepositories;
 const CategoryServices = {
   processCreateCategory: async (payload: ICategoryPayload) => {
@@ -15,21 +15,10 @@ const CategoryServices = {
       }
     }
   },
-  processUpdateCategory: async (payload: ICategoryPayload) => {
+ 
+  processRetrieveCategory: async () => {
     try {
-      const data = await updateCategory(payload);
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In update category service");
-      }
-    }
-  },
-  processRetrieveCategory: async (payload: ICategoryPayload) => {
-    try {
-      const data = await findCategories(payload);
+      const data = await findCategories();
       return data;
     } catch (error) {
       if (error instanceof Error) {
@@ -39,18 +28,7 @@ const CategoryServices = {
       }
     }
   },
-  processDeleteCategory: async (payload: ICategoryPayload) => {
-    try {
-      const data = await deleteCategory(payload);
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In delete category service");
-      }
-    }
-  },
+  
 };
 
 export default CategoryServices;

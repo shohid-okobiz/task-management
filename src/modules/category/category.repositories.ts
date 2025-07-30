@@ -1,12 +1,11 @@
+
 import { ICategoryPayload } from './category.interfaces';
-import Category from './category.models';
-import SlugUtils from '../../utils/slug.utils';
-const { generateSlug } = SlugUtils;
+import { Category } from './category.models';
 
 const CategoryRepositories = {
   createCategory: async (payload: ICategoryPayload) => {
     try {
-      const newCategory = new Category(payload);
+      const newCategory = new Category({ name: payload.name });
       await newCategory.save();
       return newCategory;
     } catch (error) {
@@ -17,10 +16,9 @@ const CategoryRepositories = {
       }
     }
   },
-  findCategories: async ({ feature }: ICategoryPayload) => {
+  findCategories: async () => {
     try {
-      const query = feature ? { feature } : {};
-      const data = await Category.find(query);
+      const data = await Category.find();
       return data;
     } catch (error) {
       if (error instanceof Error) {
@@ -30,36 +28,7 @@ const CategoryRepositories = {
       }
     }
   },
-  updateCategory: async ({ categoryId, categoryName }: ICategoryPayload) => {
-    try {
-      const slug = generateSlug(categoryName as string);
-      const updatedData = await Category.findByIdAndUpdate(
-        categoryId,
-        { $set: { categoryName, slug } },
-        { new: true }
-      );
-      return updatedData;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In category update Operation');
-      }
-    }
-  },
-  deleteCategory: async ({ categoryId }: ICategoryPayload) => {
-    try {
-      const updatedData = await Category.findByIdAndDelete(categoryId);
-      if (!updatedData) throw new Error('category delete fail');
-      return;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In category delete Operation');
-      }
-    }
-  },
+ 
 };
 
 export default CategoryRepositories;
