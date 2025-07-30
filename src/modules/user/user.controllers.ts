@@ -75,7 +75,7 @@ const UserControllers = {
   handleCheck: (req: Request, res: Response, next: NextFunction) => {
     try {
       const decoded = req.authenticateTokenDecoded;
-      res.status(204).send();
+      res.status(204).send(decoded)
     } catch (error) {
       const err = error as Error;
       logger.error(err.message);

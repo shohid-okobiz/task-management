@@ -94,11 +94,10 @@ const UserServices = {
     }
   },
   processLogin: (payload: IUser): ITokenProcessReturn => {
-    const { email, isVerified, role, id, name } = payload;
+    const { email, isVerified, id, name } = payload;
     const accessToken = generateAccessToken({
       email,
-      isVerified,
-      role,
+      isVerified,    
       userId: id,
       name,
        
@@ -106,7 +105,6 @@ const UserServices = {
     const refreshToken = generateRefreshToken({
       email,
       isVerified,
-      role,
       userId: id,
       name,
        
@@ -115,12 +113,11 @@ const UserServices = {
     return { accessToken, refreshToken } as ITokenProcessReturn;
   },
   processTokens: (payload: TokenPayload): ITokenProcessReturn => {
-    const { email, isVerified, role, userId, name } = payload;
+    const { email, isVerified,  userId, name } = payload;
 
     const accessToken = generateAccessToken({
       email,
       isVerified,
-      role,
       userId,
       name,
       
@@ -129,7 +126,6 @@ const UserServices = {
     const refreshToken = generateRefreshToken({
       email,
       isVerified,
-      role,
       userId,
       name,
       

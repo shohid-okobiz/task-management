@@ -6,13 +6,12 @@ import corsConfiguration from './configs/cors.configs';
 import { baseUrl } from './const';
 import { globalErrorMiddleware } from './middlewares/globalError.middleware';
 import cookieParser from 'cookie-parser';
-import multer from 'multer';
+
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(multer().none());
 app.use(cookieParser());
 app.use(cors(corsConfiguration));
 app.use(express.static('public'));
@@ -50,6 +49,7 @@ import {
 app.use(baseUrl.v1, UserRoutes);
  
 app.use(baseUrl.v1, CategoryRoutes);
+
  
  
 // app.use(baseUrl.v1, SubCategory);
