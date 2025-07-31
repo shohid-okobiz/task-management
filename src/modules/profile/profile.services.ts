@@ -15,9 +15,8 @@ import {
 import ProfileRepositories from "./profile.repositories";
 import { join } from "path";
 import { promises as fs } from "fs";
-import { AccountStatus } from "../../interfaces/jwtPayload.interfaces";
-import IdentityVerificationUtils from "../../utils/identityVerificationEmail.utils";
-import { DocumentType } from "../user/user.enums";
+ 
+ 
 import UserRepositories from "../user/user.repositories";
 
 const {
@@ -31,19 +30,15 @@ const {
   findBio,
   createAvatar,
   findAvatar,
-  uploadIdentityDocuments,
+  
   getAllUsers,
-  changeUserAccountStatus,
+  
   findFullProfile
 } = ProfileRepositories;
 
 const { findUserByEmailOrPhone } = UserRepositories;
 
-const {
-  sendApprovedEmailUtils,
-  sendRejectionEmailUtils,
-  sendSuspendedEmailUtils,
-} = IdentityVerificationUtils;
+ 
 
 const ProfileServices = {
    processRetrieveFullProfile: async (userId: Types.ObjectId) => {
@@ -191,28 +186,7 @@ const ProfileServices = {
       }
     }
   },
-  processIdentityUpload: async ({
-    documents,
-    userId,
-    documentType,
-  }: IIdentityDocumentPayload) => {
-    try {
-      const uploadedDocuments = documents?.map(
-        (item) => `/public/${item}`
-      ) as string[];
-      await uploadIdentityDocuments({
-        documentType,
-        documents: uploadedDocuments,
-        userId,
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred identity upload service");
-      }
-    }
-  },
+ 
   processGetAllUsers: async ({
     accountStatus,
     page,
@@ -234,88 +208,7 @@ const ProfileServices = {
       }
     }
   },
-  processChangeUserAccountStatus: async ({
-    accountStatus,
-    identityDocument,
-    userId,
-  }: IChangeUserStatus) => {
-    try {
-      switch (accountStatus) {
-        case AccountStatus.ACTIVE: {
-          const { updatedUser } = await changeUserAccountStatus({
-            accountStatus,
-            identityDocument,
-            userId,
-          });
-          await sendApprovedEmailUtils({
-            name: updatedUser?.name!,
-            email: updatedUser?.email!,
-          });
-          return updatedUser;
-        }
-        case AccountStatus.SUSPENDED: {
-          const { updatedUser } = await changeUserAccountStatus({
-            accountStatus,
-            identityDocument,
-            userId,
-          });
-          await sendSuspendedEmailUtils({
-            name: updatedUser?.name!,
-            email: updatedUser?.email!,
-          });
-          return updatedUser;
-        }
-        case AccountStatus.REJECTED: {
-          const { updatedUser, deletedIdentity } =
-            await changeUserAccountStatus({
-              accountStatus,
-              identityDocument,
-              userId,
-            });
-          switch (deletedIdentity?.documentType) {
-            case DocumentType.DRIVING_LICENSE:
-            case DocumentType.NID: {
-              const documents: string[] = [];
-              documents[0] = deletedIdentity?.frontSide!;
-              documents[1] = deletedIdentity?.backSide!;
-              const relativeImagePaths = documents.map((item) =>
-                item.replace("/public/", "")
-              );
-              const filePaths = relativeImagePaths.map((item) =>
-                join(__dirname, "../../../public", item)
-              );
-              for (const item of filePaths) {
-                await fs.unlink(item);
-              }
-              break;
-            }
-            case DocumentType.PASSPORT: {
-              const image = deletedIdentity?.frontSide!;
-              const relativeImagePath = image.replace("/public/", "");
-              const filePath = join(
-                __dirname,
-                "../../../public",
-                relativeImagePath
-              );
-              await fs.unlink(filePath);
-              break;
-            }
-          }
-          await sendRejectionEmailUtils({
-            name: updatedUser?.name!,
-            email: updatedUser?.email!,
-          });
-          return updatedUser;
-        }
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred change account status service");
-      }
-    }
-  },
+ 
   processSearchUser: async ({ role, user }: ISearchUserQuery) => {
     try {
       return await findUserByEmailOrPhone({ role, user });

@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import logger from "../../configs/logger.configs";
 import ProfileServices from "./profile.services";
 import {
-  AccountStatus,
+  
   TokenPayload,
 } from "../../interfaces/jwtPayload.interfaces";
 import {
@@ -25,9 +25,9 @@ const {
   processRetrieveBio,
   processCreateAvatar,
   processRetrieveAvatar,
-  processIdentityUpload,
+  
   processGetAllUsers,
-  processChangeUserAccountStatus,
+ 
   processSearchUser,
   processRetrieveFullProfile
 } = ProfileServices;
@@ -211,28 +211,7 @@ const ProfileControllers = {
       next();
     }
   },
-  handleIdentityUpload: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { userId } = req.authenticateTokenDecoded as TokenPayload;
-      const documents = (req?.files as IIdentityDocumentPaths[])?.map(
-        (item) => item.filename
-      );
-      const { documentType } = req.body;
-      await processIdentityUpload({ userId, documents, documentType });
-      res.status(200).json({
-        status: "success",
-        message: "Identity document upload successful",
-      });
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
+ 
   handleGetAllUsers: async (
     req: Request,
     res: Response,
@@ -311,69 +290,7 @@ const ProfileControllers = {
       next();
     }
   },
-  handleChangeUserIdentityStatus: async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      const { id } = req.params;
-      const { identityDocument, accountStatus } = req.body;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-        res
-          .status(400)
-          .json({ status: "error", message: "Invalid partner ID" });
-        return;
-      }
-
-      const userId = new mongoose.Types.ObjectId(id);
-      switch (accountStatus) {
-        case AccountStatus.ACTIVE: {
-          const data = await processChangeUserAccountStatus({
-            identityDocument,
-            accountStatus,
-            userId,
-          });
-          res.status(200).json({
-            status: "success",
-            message: "User Is Now Active",
-            data,
-          });
-          return;
-        }
-        case AccountStatus.SUSPENDED: {
-          const data = await processChangeUserAccountStatus({
-            identityDocument,
-            accountStatus,
-            userId,
-          });
-          res.status(200).json({
-            status: "success",
-            message: "User Is Now Suspend",
-            data,
-          });
-          return;
-        }
-        case AccountStatus.REJECTED: {
-          const data = await processChangeUserAccountStatus({
-            identityDocument,
-            accountStatus,
-            userId,
-          });
-          res.status(200).json({
-            status: "success",
-            message: "User Is Now Rejected",
-            data,
-          });
-          return;
-        }
-      }
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
-    }
-  },
+  
 };
 
 export default ProfileControllers;

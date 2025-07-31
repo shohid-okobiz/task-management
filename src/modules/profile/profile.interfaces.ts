@@ -1,6 +1,5 @@
 import { Document, Types } from "mongoose";
-import { DocumentType } from "../user/user.enums";
-import { AccountStatus } from "../../interfaces/jwtPayload.interfaces";
+ 
 import { IIdentityDocument, IUser } from "../user/user.interfaces";
 
 export interface IProfile extends Document {
@@ -72,7 +71,7 @@ export interface IGetAllUserPayload {
 
 export interface IChangeUserStatus {
   userId?: Types.ObjectId;
-  accountStatus?: AccountStatus;
+ 
   identityDocument?: Types.ObjectId;
 }
 export interface IChangeUserStatusRepository {

@@ -12,8 +12,8 @@ import {
   IWorksAtPayload,
 } from "./profile.interfaces";
 import Profile from "./profile.models";
-import User, { IdentityDocument } from "../user/user.model";
-import { AccountStatus } from "../../interfaces/jwtPayload.interfaces";
+import User from "../user/user.model";
+ 
 import { documentPerPage } from "../../const";
 import { IIdentityDocument, IUser } from "../user/user.interfaces";
 
@@ -198,44 +198,7 @@ const ProfileRepositories = {
       }
     }
   },
-  uploadIdentityDocuments: async ({
-    documents,
-    userId,
-    documentType,
-  }: IIdentityDocumentPayload) => {
-    const session = await mongoose.startSession();
-    try {
-      await session.withTransaction(async () => {
-        const newDocuments = new IdentityDocument({
-          frontSide: documents?.[0],
-          backSide: documents?.[1],
-          documentType,
-          user: userId,
-        });
-        await newDocuments.save();
-        await User.findByIdAndUpdate(
-          userId,
-          {
-            $set: {
-              accountStatus: AccountStatus.PENDING,
-              identityDocument: newDocuments._id,
-            },
-          },
-          { new: true }
-        );
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error(
-          "Unknown Error Occurred In Upload Identity Document Operation"
-        );
-      }
-    } finally {
-      session.endSession();
-    }
-  },
+ 
   getAllUsers: async ({ query, page, sort }: IGetAllUserPayload) => {
     try {
       const currentPage = page ?? 1;
@@ -269,80 +232,7 @@ const ProfileRepositories = {
       }
     }
   },
-  changeUserAccountStatus: async ({
-    accountStatus,
-    identityDocument,
-    userId,
-  }: IChangeUserStatus): Promise<IChangeUserStatusRepository> => {
-    const session = await User.startSession();
-    session.startTransaction();
-
-    try {
-      let updatedUser: IUser | null = null;
-      let deletedIdentity: IIdentityDocument | null;
-
-      switch (accountStatus) {
-        case AccountStatus.ACTIVE:
-        case AccountStatus.SUSPENDED: {
-          updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { $set: { accountStatus } },
-            { new: true, session }
-          );
-
-          if (!updatedUser) {
-            throw new Error("User not found or update failed.");
-          }
-
-          break;
-        }
-
-        case AccountStatus.REJECTED: {
-          updatedUser = await User.findByIdAndUpdate(
-            userId,
-            { $set: { accountStatus, identityDocument: null } },
-            { new: true, session }
-          );
-
-          if (!updatedUser) {
-            throw new Error("User not found or update failed.");
-          }
-
-          deletedIdentity = await IdentityDocument.findOneAndDelete(
-            { _id: identityDocument },
-            { session }
-          );
-
-          if (!deletedIdentity) {
-            throw new Error("Identity document not found or deletion failed.");
-          }
-
-          break;
-        }
-
-        default:
-          throw new Error("Invalid account status provided.");
-      }
-
-      await session.commitTransaction();
-      session.endSession();
-
-      return {
-        updatedUser: updatedUser!,
-        deletedIdentity: deletedIdentity!,
-      };
-    } catch (error) {
-      await session.abortTransaction();
-      session.endSession();
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error(
-          "Unknown Error Occurred In change user account status Operation"
-        );
-      }
-    }
-  },
+ 
 };
 
 export default ProfileRepositories;
