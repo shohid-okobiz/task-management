@@ -94,7 +94,7 @@ const UserMiddlewares = {
     const { role } = req.user as IUser;
     if (
       role === UserRole.Admin ||
-      role === UserRole.AccountAdministrator ||
+      role === UserRole.Guest ||
       role === UserRole.ContentManager ||
       role === UserRole.FinanceManager ||
       UserRole.ListingVerificationManager

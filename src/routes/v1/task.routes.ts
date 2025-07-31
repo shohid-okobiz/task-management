@@ -1,10 +1,11 @@
 import { Router } from "express";
 import TaskControllers from '../../modules/task/task.controllers';
+import UserMiddlewares from "../../modules/user/user.middlewares";
 
 
 const router = Router();
 
-
+const { checkAccessToken, } = UserMiddlewares;
 
 const {
     handleCreateTask,
@@ -20,7 +21,7 @@ const {
 
 router
     .route("/create-new-task")
-    .post(handleCreateTask);
+    .post(checkAccessToken,handleCreateTask);
 
 router
     .route("/get-all-task")

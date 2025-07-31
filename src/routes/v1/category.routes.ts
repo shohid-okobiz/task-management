@@ -1,9 +1,10 @@
 import { Router } from "express";
 
 import CategoryControllers from "../../modules/category/category.controllers";
+import UserMiddlewares from "../../modules/user/user.middlewares";
 
 
-
+const { checkAccessToken, } = UserMiddlewares;
 const {
   handleCreateCategory,
   handleRetrieveCategories,
@@ -13,10 +14,9 @@ const router = Router();
 
 router
   .route("/category")
-  .post(
-    handleCreateCategory
+  .post( checkAccessToken,handleCreateCategory
   )
-  .get(handleRetrieveCategories);
+  .get(checkAccessToken,handleRetrieveCategories);
 
  
 

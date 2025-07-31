@@ -8,6 +8,7 @@ export interface ICategory extends Document {
 }
 
 export interface ICategoryPayload {
-  name?: string;
-  categoryId?: Types.ObjectId;
+  name: string;
+  user: Types.ObjectId;
 }
+
