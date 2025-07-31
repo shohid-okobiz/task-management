@@ -20,7 +20,7 @@ const TaskControllers = {
   handleCreateTask: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.authenticateTokenDecoded?.userId;
-      
+
       const taskPayload: ICreateTaskPayload = {
         ...req.body,
         user: userId,
@@ -28,8 +28,8 @@ const TaskControllers = {
       };
 
       const newTask = await processCreateTask(taskPayload);
-      
-      res.status(201).json({ 
+
+      res.status(201).json({
         status: 'success',
         message: 'Task created successfully',
         data: newTask
@@ -107,7 +107,7 @@ const TaskControllers = {
         ...req.body
       };
 
-     
+
       if (updatePayload.date) {
         updatePayload.date = new Date(updatePayload.date);
       }
@@ -128,7 +128,36 @@ const TaskControllers = {
       });
     }
   },
+  handleUpdateOwnTaskStatus: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { task_status } = req.body;
+      const userId = req.authenticateTokenDecoded?.userId;
+      const validStatuses = ['pending', 'collaborative', 'ongoing', 'done'];
+      if (!validStatuses.includes(task_status)) {
+         res.status(400).json({
+          status: 'error',
+          message: 'Invalid task status'
+        });
+      }
 
+      const updatedTask = await TaskServices.processUpdateTaskStatus(id, userId, task_status);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Task status updated successfully',
+        data: updatedTask
+      });
+    } catch (error) {
+      const err = error as Error;
+      logger.error(err.message)
+      next();
+      res.status(400).json({
+        status: 'error',
+        message: err.message
+      });
+    }
+  },
   handleDeleteTask: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
@@ -149,7 +178,7 @@ const TaskControllers = {
       });
     }
   },
-   handleUpdateTaskStatus: async (req: Request, res: Response, next: NextFunction) => {
+  handleUpdateTaskStatus: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
       const { task_status } = req.body;
@@ -187,7 +216,7 @@ const TaskControllers = {
     } catch (error) {
       const err = error as Error;
       logger.error(err.message);
-         next()
+      next()
       res.status(400).json({
         status: 'error',
         message: err.message
@@ -214,7 +243,7 @@ const TaskControllers = {
     } catch (error) {
       const err = error as Error;
       logger.error(err.message);
-          next()
+      next()
       res.status(400).json({
         status: 'error',
         message: err.message

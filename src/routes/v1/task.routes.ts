@@ -15,7 +15,8 @@ const {
     handleDeleteTask,
     handleUpdateTaskStatus,
     handleGetTaskStats,
-    handleGetTasksByDateRange
+    handleGetTasksByDateRange,
+    handleUpdateOwnTaskStatus
 } = TaskControllers;
 
 
@@ -26,7 +27,9 @@ router
 router
     .route("/get-all-task")
     .get(checkAccessToken,handleGetAllTasks);
-
+router
+    .route("/my-task/:id/status")
+    .patch(checkAccessToken,handleUpdateOwnTaskStatus);
 
 router
     .route("/stats")
@@ -40,21 +43,21 @@ router
 
 router
     .route("/task/:id")
-    .get(handleGetTask);
+    .get(checkAccessToken,handleGetTask);
 
 router
     .route("/task/:id")
-    .put(handleUpdateTask);
+    .put(checkAccessToken,handleUpdateTask);
 
 
 router
     .route("/task/:id")
-    .delete(handleDeleteTask);
+    .delete(checkAccessToken,handleDeleteTask);
 
 
 router
     .route("/task/:id/status")
-    .patch(handleUpdateTaskStatus);
+    .patch(checkAccessToken,handleUpdateTaskStatus);
 
 export default router;
 
