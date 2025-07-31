@@ -68,9 +68,9 @@ const TaskServices = {
 
   processGetAllTasks: async (query: IGetTasksQuery): Promise<ITaskResponse> => {
     try {
-      // Validate pagination parameters
+     
       const page = Math.max(1, query.page || 1);
-      const limit = Math.min(Math.max(1, query.limit || 10), 50); // Max 50 items per page
+      const limit = Math.min(Math.max(1, query.limit || 10), 50); 
 
       const tasksData = await getAllTasks({
         ...query,

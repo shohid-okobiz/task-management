@@ -59,6 +59,7 @@ const TaskControllers = {
     } catch (error) {
       const err = error as Error;
       logger.error(err.message);
+      next()
       res.status(404).json({
         status: 'error',
         message: err.message

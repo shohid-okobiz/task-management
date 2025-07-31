@@ -14,7 +14,7 @@ import { Task } from './task.models';
 const TaskRepositories = {
   createTask: async (payload: ICreateTaskPayload): Promise<ICreateTaskPayload> => {
     try {
-console.log("payload task === ", payload)
+       console.log("payload task === ", payload)
       const category = await Category.findOne({ _id: payload.category, user: payload.user });
       if (!category) {
         throw new Error('Category not found or does not belong to user');
@@ -39,7 +39,7 @@ console.log("payload task === ", payload)
   findTaskById: async (taskId: Types.ObjectId, userId: Types.ObjectId): Promise<ICreateTaskPayload | null> => {
     try {
       const task = await Task.findOne({ _id: taskId, user: userId })
-        .populate('category', 'name color description');
+        .populate('category', 'name ');
       return task;
     } catch (error) {
       if (error instanceof Error) {
@@ -61,7 +61,6 @@ console.log("payload task === ", payload)
     try {
       const skip = (page - 1) * limit;
       
-      // Build query
       const query: any = { user: userId };
       
       if (status && status !== 'all') {
@@ -69,12 +68,11 @@ console.log("payload task === ", payload)
       }
       
       if (category) {
-        // Find category by name for the user
-        const categoryDoc = await Category.findOne({ name: { $regex: category, $options: 'i' }, user: userId });
+        
+        const categoryDoc = await Category.findOne({  user: userId });
         if (categoryDoc) {
           query.category = categoryDoc._id;
         } else {
-          // If category not found, return empty result
           return {
             tasks: [],
             total: 0,
@@ -93,7 +91,7 @@ console.log("payload task === ", payload)
 
       const [tasks, total] = await Promise.all([
         Task.find(query)
-          .populate('category', 'name color description')
+          .populate('category', 'name')
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
@@ -124,7 +122,7 @@ console.log("payload task === ", payload)
     payload: IUpdateTaskPayload
   ): Promise<ICreateTaskPayload | null> => {
     try {
-      // If category is being updated, verify it exists and belongs to user
+     
       if (payload.category) {
         const category = await Category.findOne({ _id: payload.category, user: userId });
         if (!category) {
@@ -136,7 +134,7 @@ console.log("payload task === ", payload)
         { _id: taskId, user: userId },
         { $set: payload },
         { new: true, runValidators: true }
-      ).populate('category', 'name color description');
+      ).populate('category', 'name ');
       
       return updatedTask;
     } catch (error) {
@@ -195,7 +193,7 @@ console.log("payload task === ", payload)
         Task.countDocuments({ user: userId })
       ]);
 
-      // Initialize status counts
+      
       const stats: ITaskStats = {
         total,
         pending: 0,
@@ -208,7 +206,6 @@ console.log("payload task === ", payload)
         }))
       };
 
-      // Map status counts
       statusStats.forEach(stat => {
         if (stat._id === 'pending') stats.pending = stat.count;
         else if (stat._id === 'collaborative') stats.collaborative = stat.count;
@@ -239,7 +236,7 @@ console.log("payload task === ", payload)
           $lte: endDate
         }
       })
-      .populate('category', 'name color description')
+      .populate('category', 'name')
       .sort({ date: 1 });
 
       return tasks;

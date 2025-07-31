@@ -25,7 +25,7 @@ router
 
 router
     .route("/get-all-task")
-    .get(handleGetAllTasks);
+    .get(checkAccessToken,handleGetAllTasks);
 
 
 router
