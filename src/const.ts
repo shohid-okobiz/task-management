@@ -3,10 +3,6 @@ export const corsWhiteList = [
   "http://localhost:5175",
   "http://localhost:3000",
   "http://localhost:4173",
-  "https://homzystay.com",
-
-  "https://server.homzystay.com",
-  "https://admin.homzystay.com",
   "http://192.168.0.180:3000",
   "*"
 ];
@@ -19,8 +15,8 @@ export const baseUrl = {
 };
 export const documentPerPage = 9;
 export const rejectionEmailSubject =
-  "Identity Verification Failed – Action Needed";
+  "";
 export const approvedEmailSubject =
-  "Success! Your Identity Has Been Verified on HomzyStay";
+  "";
 export const accountSuspendedEmailSubject =
-  "Your HomzyStay Account Has Been Suspended Due to Policy Violation";
+  "";
