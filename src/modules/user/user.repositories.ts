@@ -77,22 +77,22 @@ const UserRepositories = {
       }
     }
   },
-  verifyUser: async (email: string) => {
-    try {
-      const verifiedUserData = await User.findOneAndUpdate(
-        { email },
-        { isVerified: true },
-        { new: true }
-      );
-      return verifiedUserData;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error('Unknown Error Occurred In User Find Repository');
-      }
+ verifyUser: async (email: string) => {
+  try {
+    const verifiedUserData = await User.findOneAndUpdate(
+      { email },
+      { isVerified: true },
+      { new: true }
+    );
+    return verifiedUserData;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error('Unknown Error Occurred In User Find Repository');
     }
-  },
+  }
+},
   // deleteUser: async (payload: Types.ObjectId) => {
   //   const session = await mongoose.startSession();
   //   session.startTransaction();

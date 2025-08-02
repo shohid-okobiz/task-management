@@ -44,6 +44,7 @@ export interface ISignupPayload {
 export interface ITokenProcessReturn {
   accessToken: string;
   refreshToken: string;
+  isVerified?:boolean;
 }
 
 export interface IProcessDeleteUserPayload {

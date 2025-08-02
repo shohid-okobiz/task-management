@@ -62,37 +62,35 @@ const UserServices = {
       }
     }
   },
-  processVerify: async (email: string): Promise<ITokenProcessReturn | null> => {
+ processVerify: async (email: string): Promise<ITokenProcessReturn | null> => {
+  try {
     const data = await verifyUser(email);
-    try {
-      if (data) {
-        const { email, isVerified,  id, name,  } = data;
-        const accessToken = generateAccessToken({
-          email,
-          isVerified,
-          userId: id,
-          name,
-          
-        }) as string;
-        const refreshToken = generateRefreshToken({
-          email,
-          isVerified,
-          userId: id,
-          name,
-         
-        }) as string;
+    if (data) {
+      const { email, isVerified, id, name } = data;
+      const accessToken = generateAccessToken({
+        email,
+        isVerified,
+        userId: id,
+        name,
+      }) as string;
+      const refreshToken = generateRefreshToken({
+        email,
+        isVerified,
+        userId: id,
+        name,
+      }) as string;
 
-        return { accessToken, refreshToken } as ITokenProcessReturn;
-      }
-      return null;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw error;
-      } else {
-        throw new Error("Unknown Error Occurred In verify user service");
-      }
+      return { accessToken, refreshToken, isVerified } as ITokenProcessReturn;
     }
-  },
+    return null;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error("Unknown Error Occurred In verify user service");
+    }
+  }
+},
   processLogin: (payload: IUser): ITokenProcessReturn => {
     const { email, isVerified, id, name } = payload;
     const accessToken = generateAccessToken({

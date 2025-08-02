@@ -32,38 +32,48 @@ const UserControllers = {
       next();
     }
   },
-  handleVerify: async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { email } = req.body;
-      const data = await processVerify(email);
-      if (!data) {
-        res.status(400).json({ status: "error", message: "Bad Request" });
-        return;
-      } else {
-        const { accessToken, refreshToken } = data;
-        res.clearCookie("refreshtoken");
-        res.cookie("refreshtoken", refreshToken, cookieOption(null, 30));
-        res.status(200).json({
-          status: "success",
-          message: "Email verification successfully",
-          accessToken,
-        });
-        return;
-      }
-    } catch (error) {
-      const err = error as Error;
-      logger.error(err.message);
-      next();
+handleVerify: async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    const data = await processVerify(email);
+    if (!data) {
+      res.status(400).json({ status: "error", message: "Bad Request" });
+      return;
     }
-  },
+    const { accessToken, refreshToken, isVerified } = data;
+    res.clearCookie("refreshtoken");
+    res.cookie("accessToken", accessToken, cookieOption(null, 30));
+    res.cookie("refreshToken", refreshToken, cookieOption(null, 30));
+    res.cookie("isVerified", isVerified ? "true" : "false", cookieOption(null, 30));
+    res.status(200).json({
+      status: "success",
+      message: "Email verification successful",
+      accessToken,
+      refreshToken,
+      isVerified
+    });
+  } catch (error) {
+    const err = error as Error;
+    logger.error(err.message);
+    next(error);
+  }
+},
   handleLogin: (req: Request, res: Response, next: NextFunction) => {
     try {
       const { accessToken, refreshToken } = processLogin(req.user as IUser);
-      res.cookie("refreshtoken", refreshToken, cookieOption(null, 30));
+      res.cookie("accessToken", accessToken, cookieOption(null, 30));
+        res.cookie("refreshToken", refreshToken, cookieOption(null, 30));
+        res.cookie(
+          "isVerified",
+          req.user && req.user.isVerified ? "true" : "false",
+          cookieOption(null, 30)
+        );
       res.status(200).json({
         status: "success",
         message: "Login successful",
-        accessToken,
+         accessToken,
+            refreshToken,
+            isVerified: req.user?.isVerified,
       });
       return;
     } catch (error) {
