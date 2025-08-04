@@ -16,9 +16,9 @@ const CategoryServices = {
     }
   },
  
-  processRetrieveCategory: async () => {
+  processRetrieveCategory: async (userId: string) => {
     try {
-      const data = await findCategories();
+      const data = await findCategories(userId);
       return data;
     } catch (error) {
       if (error instanceof Error) {

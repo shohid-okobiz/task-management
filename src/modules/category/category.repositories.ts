@@ -16,9 +16,9 @@ const CategoryRepositories = {
       }
     }
   },
-  findCategories: async () => {
+  findCategories: async (userId: string) => {
     try {
-      const data = await Category.find();
+      const data = await Category.find({ user: userId });
       return data;
     } catch (error) {
       if (error instanceof Error) {

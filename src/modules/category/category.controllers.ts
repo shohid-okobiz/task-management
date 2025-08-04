@@ -43,7 +43,8 @@ const CategoryControllers = {
     next: NextFunction
   ) => {
     try {
-      const data = await processRetrieveCategory();
+      const userId = req.authenticateTokenDecoded?.userId;
+      const data = await processRetrieveCategory(userId?.toString());
       res.status(200).json({
         status: "success",
         message: "Category retrieved successful",
